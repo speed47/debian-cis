@@ -100,18 +100,20 @@ does_pattern_exist_in_file() {
     local PATTERN=$2
 
     debug "Checking if $PATTERN is present in $FILE"
-    if [ -r "$FILE" ] ; then
-        debug "grep -qE -- '$PATTERN' $FILE"
-        if $(grep -qE -- "$PATTERN" $FILE); then
-            FNRET=0
+    for FILE in $FILES; do
+        if [ -r "$FILE" ] ; then
+            debug "grep -qE -- '$PATTERN' $FILE"
+            if $(grep -qE -- "$PATTERN" $FILE); then
+                FNRET=0
+                return
+            else
+                FNRET=1
+            fi
         else
-            FNRET=1
+            debug "File $FILE is not readable!"
+            FNRET=2
         fi
-    else
-        debug "File $FILE is not readable!"
-        FNRET=2
-    fi
-
+    done
 }
 
 add_end_of_file() {
